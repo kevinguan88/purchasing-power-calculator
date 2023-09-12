@@ -1,0 +1,6 @@
+import axios from 'axios';
+
+axios.get("https://api.bls.gov/publicAPI/v2/timeseries/data/CUUSS49DSA0?registrationkey=8141847a89544b2db611b6c73eec32af")
+    .then(result => {
+        console.log(result);
+    })
