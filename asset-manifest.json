@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/http//kevinguan88.github.io/purchasing-power-calculator/static/css/main.757ad0f0.css",
-    "main.js": "/http//kevinguan88.github.io/purchasing-power-calculator/static/js/main.0d380189.js",
-    "static/js/787.8e61e3ef.chunk.js": "/http//kevinguan88.github.io/purchasing-power-calculator/static/js/787.8e61e3ef.chunk.js",
-    "index.html": "/http//kevinguan88.github.io/purchasing-power-calculator/index.html",
-    "main.757ad0f0.css.map": "/http//kevinguan88.github.io/purchasing-power-calculator/static/css/main.757ad0f0.css.map",
-    "main.0d380189.js.map": "/http//kevinguan88.github.io/purchasing-power-calculator/static/js/main.0d380189.js.map",
-    "787.8e61e3ef.chunk.js.map": "/http//kevinguan88.github.io/purchasing-power-calculator/static/js/787.8e61e3ef.chunk.js.map"
+    "main.css": "/purchasing-power-calculator/static/css/main.757ad0f0.css",
+    "main.js": "/purchasing-power-calculator/static/js/main.53fd544a.js",
+    "static/js/787.8e61e3ef.chunk.js": "/purchasing-power-calculator/static/js/787.8e61e3ef.chunk.js",
+    "index.html": "/purchasing-power-calculator/index.html",
+    "main.757ad0f0.css.map": "/purchasing-power-calculator/static/css/main.757ad0f0.css.map",
+    "main.53fd544a.js.map": "/purchasing-power-calculator/static/js/main.53fd544a.js.map",
+    "787.8e61e3ef.chunk.js.map": "/purchasing-power-calculator/static/js/787.8e61e3ef.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.757ad0f0.css",
-    "static/js/main.0d380189.js"
+    "static/js/main.53fd544a.js"
   ]
 }
