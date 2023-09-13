@@ -114,11 +114,14 @@ function App() {
 
   return (
     <div className="App">
-      <div className='selection container'>
+      <nav className='navbar navbar-expand-lg bg-body-tertiary'>
+        <div className='container-fluid'>
+          <a className='navbar-brand'>Geographical Cost of Living Calculator</a>
+        </div>
+      </nav>
+      <div className='selection container py-4'>
         <form>
-          <p>
-            My salary is
-          </p>
+          <label for="current-city" class="form-label">My salary is</label>
           <div className="input-group mb-3">
             <span className="input-group-text">$</span>
             <input id='salaryInput' type="text" className="form-control" aria-label="Amount (to the nearest dollar)" onInput={formatInput} />
@@ -126,25 +129,21 @@ function App() {
           </div>
           <div className='row'>
             <div className='col'>
-              <p>
-                I live in
-              </p>
+            <label for="current-city" class="form-label">I live in</label>
               <select className="form-select" id='current-city'>
                 <option value="" disabled selected hidden>Choose a City</option>
                 {options}
               </select>
             </div>
             <div className='col'>
-              <p>
-                What's my salary in
-              </p>
+            <label for="current-city" class="form-label">What's my salary in</label>
               <select className="form-select" id='comparing-city' defaultValue={'default'}>
                 <option value="default" disabled hidden>Choose a City</option>
                 {options}
               </select>
                         </div>
             </div>
-          <button type='button' className='btn btn-primary' onClick={setData}> {/*new method that calls the set and renders results*/}
+          <button type='button' className='btn btn-primary my-3' onClick={setData}> {/*new method that calls the set and renders results*/}
             Calculate
           </button>
         </form>
