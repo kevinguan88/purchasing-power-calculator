@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/purchasing-power-calculator/static/css/main.757ad0f0.css",
-    "main.js": "/purchasing-power-calculator/static/js/main.5a2de22b.js",
+    "main.js": "/purchasing-power-calculator/static/js/main.b2c035f7.js",
     "static/js/787.8e61e3ef.chunk.js": "/purchasing-power-calculator/static/js/787.8e61e3ef.chunk.js",
     "index.html": "/purchasing-power-calculator/index.html",
     "main.757ad0f0.css.map": "/purchasing-power-calculator/static/css/main.757ad0f0.css.map",
-    "main.5a2de22b.js.map": "/purchasing-power-calculator/static/js/main.5a2de22b.js.map",
+    "main.b2c035f7.js.map": "/purchasing-power-calculator/static/js/main.b2c035f7.js.map",
     "787.8e61e3ef.chunk.js.map": "/purchasing-power-calculator/static/js/787.8e61e3ef.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.757ad0f0.css",
-    "static/js/main.5a2de22b.js"
+    "static/js/main.b2c035f7.js"
   ]
 }
