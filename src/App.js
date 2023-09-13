@@ -41,18 +41,23 @@ function App() {
         //daily limit is 500 requests
         axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${currentCity}SA0?registrationkey=${apiKey}`)
           .then(response => {
-            const current = response.data.Results.series[0].data[0].value;
-            try {
-              axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${comparingCity}SA0?registrationkey=${apiKey}`)
-                .then(response => {
-                  setCurrentCpi(current);
-                  setComparingCpi(response.data.Results.series[0].data[0].value);
-                })
-                .catch(error => {
-                  console.log(error);
-                });
-            } catch (error) {
-              console.log(error);
+            if (response.data.status == "REQUEST_NOT_PROCESSED") {
+              alert("Error: Exceeded daily request limit\nThe BLS's Public Data API only allows up to 500 daily requests.");
+            }
+            else {
+              const current = response.data.Results.series[0].data[0].value;
+              try {
+                axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${comparingCity}SA0?registrationkey=${apiKey}`)
+                  .then(response => {
+                    setCurrentCpi(current);
+                    setComparingCpi(response.data.Results.series[0].data[0].value);
+                  })
+                  .catch(error => {
+                    console.log(error);
+                  });
+              } catch (error) {
+                console.log(error);
+              }
             }
           })
           .catch(error => {
@@ -89,16 +94,6 @@ function App() {
       setInitialRender(false);
     }
   }, [adjustedSalary])
-
-  useEffect(() => {
-    if (!initialRender) {
-      setHidden(false);
-      console.log(comparingName);
-    }
-    else {
-      setInitialRender(false);
-    }
-  }, [comparingName])
 
 
   //gets users' selection and updates the state accordingly
@@ -143,7 +138,7 @@ function App() {
             <div className='col'>
               <label htmlFor="current-city" className="form-label">I live in</label>
               <select className="form-select" id='current-city'>
-                <option value="" disabled selected hidden>Choose a City</option>
+                <option value="" disabled hidden>Choose a City</option>
                 {options}
               </select>
             </div>
