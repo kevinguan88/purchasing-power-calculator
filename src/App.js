@@ -13,6 +13,7 @@ function App() {
   const [adjustedSalary, setAdjustedSalary] = useState(0);
   const [currentCity, setCurrentCity] = useState("");
   const [comparingCity, setComparingCity] = useState("");
+  const [comparingName, setComparingName] = useState("");
 
   const [apiKey, setApiKey] = useState("8141847a89544b2db611b6c73eec32af");
 
@@ -38,11 +39,11 @@ function App() {
     if (!initialRender) {
       try {
         //daily limit is 500 requests
-        axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUR${currentCity}SA0?registrationkey=${apiKey}`)
+        axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${currentCity}SA0?registrationkey=${apiKey}`)
           .then(response => {
             const current = response.data.Results.series[0].data[0].value;
             try {
-              axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUR${comparingCity}SA0?registrationkey=${apiKey}`)
+              axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${comparingCity}SA0?registrationkey=${apiKey}`)
                 .then(response => {
                   setCurrentCpi(current);
                   setComparingCpi(response.data.Results.series[0].data[0].value);
@@ -89,6 +90,16 @@ function App() {
     }
   }, [adjustedSalary])
 
+  useEffect(() => {
+    if (!initialRender) {
+      setHidden(false);
+      console.log(comparingName);
+    }
+    else {
+      setInitialRender(false);
+    }
+  }, [comparingName])
+
 
   //gets users' selection and updates the state accordingly
   //after setting all data together they should be batched to update together
@@ -101,6 +112,7 @@ function App() {
     const salaryAmount = salaryField.value;
     setCurrentCity(currentChoice);
     setComparingCity(comparingChoice);
+    setComparingName(comparingSelect.options[comparingSelect.selectedIndex].label);
     setSalary(parseInt(salaryAmount.replace(/,/g, '')));
   }
 
@@ -121,7 +133,7 @@ function App() {
       </nav>
       <div className='selection container py-4'>
         <form>
-          <label for="current-city" class="form-label">My salary is</label>
+          <label htmlFor="current-city" className="form-label">My salary is</label>
           <div className="input-group mb-3">
             <span className="input-group-text">$</span>
             <input id='salaryInput' type="text" className="form-control" aria-label="Amount (to the nearest dollar)" onInput={formatInput} />
@@ -129,27 +141,27 @@ function App() {
           </div>
           <div className='row'>
             <div className='col'>
-            <label for="current-city" class="form-label">I live in</label>
+              <label htmlFor="current-city" className="form-label">I live in</label>
               <select className="form-select" id='current-city'>
                 <option value="" disabled selected hidden>Choose a City</option>
                 {options}
               </select>
             </div>
             <div className='col'>
-            <label for="current-city" class="form-label">What's my salary in</label>
+              <label htmlFor="current-city" className="form-label">What's my salary in ___?</label>
               <select className="form-select" id='comparing-city' defaultValue={'default'}>
                 <option value="default" disabled hidden>Choose a City</option>
                 {options}
               </select>
-                        </div>
             </div>
+          </div>
           <button type='button' className='btn btn-primary my-3' onClick={setData}> {/*new method that calls the set and renders results*/}
             Calculate
           </button>
         </form>
         <div id='results-container'>
           {/*Render results page here*/}
-          <Results adjustedSalary={adjustedSalary} hidden={resultHidden} />
+          <Results adjustedSalary={adjustedSalary} hidden={resultHidden} comparingName={comparingName} />
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import React from 'react';
 
 function Results(props) {
 
-    const {adjustedSalary, hidden} = props;
+    const {adjustedSalary, hidden, comparingName} = props;
 
     if (hidden) {
         return null;
@@ -11,8 +11,9 @@ function Results(props) {
     return (
         <div id="results">
             <p>
-                Your equivalent salary is: ${parseInt(adjustedSalary).toLocaleString()}
+                The equivalent salary in {comparingName} is: 
             </p>
+            <h3>${parseInt(adjustedSalary).toLocaleString()}</h3>
         </div>
     )
 }
