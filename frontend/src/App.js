@@ -46,6 +46,7 @@ function App() {
             }
             else {
               const current = response.data.Results.series[0].data[0].value;
+              console.log(response.data.Results)
               try {
                 axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${comparingCity}SA0?registrationkey=${apiKey}`)
                   .then(response => {
@@ -137,8 +138,8 @@ function App() {
           <div className='row'>
             <div className='col'>
               <label htmlFor="current-city" className="form-label">I live in</label>
-              <select className="form-select" id='current-city'>
-                <option value="" disabled hidden>Choose a City</option>
+              <select className="form-select" id='current-city' defaultValue={'default'}>
+                <option value="default" disabled hidden>Choose a City</option>
                 {options}
               </select>
             </div>
