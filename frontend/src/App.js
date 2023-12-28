@@ -9,16 +9,21 @@ import areaCode from './area-code.json';
 
 function App() {
   const [initialRender, setInitialRender] = useState(true);
-  const [salary, setSalary] = useState(0);
+  // const [salary, setSalary] = useState(0);
+  // const [currentCity, setCurrentCity] = useState("");
+  // const [comparingCity, setComparingCity] = useState("");
+  
+  //array containing the city codes and salary
+  //data used to query the backend API
+  const [reqData, setReqData] = useState([]); 
   const [adjustedSalary, setAdjustedSalary] = useState(0);
-  const [currentCity, setCurrentCity] = useState("");
-  const [comparingCity, setComparingCity] = useState("");
+  
   const [comparingName, setComparingName] = useState("");
 
   const [apiKey, setApiKey] = useState("8141847a89544b2db611b6c73eec32af");
 
-  const [currentCpi, setCurrentCpi] = useState('');
-  const [comparingCpi, setComparingCpi] = useState('');
+  // const [currentCpi, setCurrentCpi] = useState('');
+  // const [comparingCpi, setComparingCpi] = useState('');
 
   const [resultHidden, setHidden] = useState(true);
 
@@ -33,56 +38,66 @@ function App() {
     </option>
   ));
 
-  //1st step in effect chain
-  //fetches cpi data from BLS and sets variables 
+  //when the request data changes, it is used to call the backend
   useEffect(() => {
-    if (!initialRender) {
-      try {
-        //daily limit is 500 requests
-        axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${currentCity}SA0?registrationkey=${apiKey}`)
-          .then(response => {
-            if (response.data.status == "REQUEST_NOT_PROCESSED") {
-              alert("Error: Exceeded daily request limit\nThe BLS's Public Data API only allows up to 500 daily requests.");
-            }
-            else {
-              const current = response.data.Results.series[0].data[0].value;
-              console.log(response.data.Results)
-              try {
-                axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${comparingCity}SA0?registrationkey=${apiKey}`)
-                  .then(response => {
-                    setCurrentCpi(current);
-                    setComparingCpi(response.data.Results.series[0].data[0].value);
-                  })
-                  .catch(error => {
-                    console.log(error);
-                  });
-              } catch (error) {
-                console.log(error);
-              }
-            }
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      } catch (error) {
-        console.log(error);
-      }
+    if(!initialRender) {
+      handleCalculations();
     }
     else {
       setInitialRender(false);
     }
-  }, [currentCity, comparingCity, salary]);
+  }, [reqData])
+
+  //1st step in effect chain
+  //fetches cpi data from BLS and sets variables 
+  // useEffect(() => {
+  //   if (!initialRender) {
+  //     try {
+  //       //daily limit is 500 requests
+  //       axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${currentCity}SA0?registrationkey=${apiKey}`)
+  //         .then(response => {
+  //           if (response.data.status == "REQUEST_NOT_PROCESSED") {
+  //             alert("Error: Exceeded daily request limit\nThe BLS's Public Data API only allows up to 500 daily requests.");
+  //           }
+  //           else {
+  //             const current = response.data.Results.series[0].data[0].value;
+  //             console.log(response.data.Results)
+  //             try {
+  //               axios.get(`https://api.bls.gov/publicAPI/v2/timeseries/data/CUUS${comparingCity}SA0?registrationkey=${apiKey}`)
+  //                 .then(response => {
+  //                   setCurrentCpi(current);
+  //                   setComparingCpi(response.data.Results.series[0].data[0].value);
+  //                 })
+  //                 .catch(error => {
+  //                   console.log(error);
+  //                 });
+  //             } catch (error) {
+  //               console.log(error);
+  //             }
+  //           }
+  //         })
+  //         .catch(error => {
+  //           console.log(error);
+  //         });
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   }
+  //   else {
+  //     setInitialRender(false);
+  //   }
+  // }, [currentCity, comparingCity, salary]);
 
   //step 2 in effect chain
   //calculates adjusted salary and sets variable
-  useEffect(() => {
-    if (!initialRender) {
-      setAdjustedSalary((salary / currentCpi) * comparingCpi);
-    }
-    else {
-      setInitialRender(false);
-    }
-  }, [currentCpi, comparingCpi])
+  // useEffect(() => {
+  //   if (!initialRender) {
+  //     setAdjustedSalary((salary / currentCpi) * comparingCpi);
+  //   }
+  //   else {
+  //     setInitialRender(false);
+  //   }
+  // }, [currentCpi, comparingCpi])
 
   //step 3 in effect chain
   //renders results onto page
@@ -100,16 +115,22 @@ function App() {
   //gets users' selection and updates the state accordingly
   //after setting all data together they should be batched to update together
   const setData = () => {
+    //the selectors themselves  
     const currentSelect = document.querySelector('#current-city');
     const comparingSelect = document.querySelector('#comparing-city');
     const salaryField = document.querySelector('.form-control');
+    //the data in the selectors
     const currentChoice = currentSelect.options[currentSelect.selectedIndex].value;
     const comparingChoice = comparingSelect.options[comparingSelect.selectedIndex].value;
     const salaryAmount = salaryField.value;
-    setCurrentCity(currentChoice);
-    setComparingCity(comparingChoice);
+    //array containing the data, used to query the backend
+    const codesAndSalary = [currentChoice, comparingChoice, parseInt(salaryAmount.replace(/,/g, ''))];
+    setReqData(codesAndSalary);
     setComparingName(comparingSelect.options[comparingSelect.selectedIndex].label);
-    setSalary(parseInt(salaryAmount.replace(/,/g, '')));
+    //remove everything below
+    // setCurrentCity(currentChoice);
+    // setComparingCity(comparingChoice);
+    // setSalary(parseInt(salaryAmount.replace(/,/g, '')));
   }
 
   //formats salary input with commas and removes non-numeric characters
@@ -118,6 +139,24 @@ function App() {
     let formattedNumber = input.value.replace(/,/g, '').replace(/\D/g, '');
     formattedNumber = Number(formattedNumber).toLocaleString();
     input.value = formattedNumber;
+  }
+
+//todo: create axios post request 
+  const handleCalculations = async () => {
+    let currentCity = reqData[0];
+    let comparingCity = reqData[1];
+    let salary = reqData[2];
+      try {
+        const response = await axios.post('http://localhost:3001/api/calculate', {
+          currentCity,
+          comparingCity,
+          salary
+        });
+        
+        setAdjustedSalary(response.data.adjustedSalary);
+      } catch (error) {
+        console.log("Error in calculating: " + error);
+      }
   }
 
   return (

@@ -7,6 +7,9 @@ const areaCode = require('./area-code.json')
 
 const apiKey = "8141847a89544b2db611b6c73eec32af";
 
+let currentId;
+
+
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
@@ -49,4 +52,41 @@ var updateCpi = cron.schedule('* * * 1 * *', () => {
   )); 
 });
 
-app.post('/');
+const getCpi = (current, comparing) => {
+  let cpiArray = [];
+  con.connect(function(err) {
+    if (err) throw err;
+    console.log("Connected!");
+    
+      con.query(`SELECT cpi FROM citycpi WHERE Code = ${current}`, (err, result) => {
+        if (err) throw err;
+        console.log('Retrieved current CPI:', results);
+        connection.end();
+        cpiArray[0] = result;
+      });
+
+      con.query(`SELECT cpi FROM citycpi WHERE Code = ${comparing}`, (err, result) => {
+        if (err) throw err;
+        console.log('Retrieved comparing CPI:', results);
+        connection.end();
+        cpiArray[1] = result;
+      });
+  })
+  return cpiArray;
+}
+
+const adjustSalary = (currentCpi, comparingCpi, salary) => {
+  return((salary / currentCpi) * comparingCpi);
+}
+//todo: define post endpoint method
+app.post('/api/calculate', (req, res) => {
+
+  // Assuming input1 and input2 are sent in the request body as JSON
+  const { currentCity, comparingCity, salary } = req.body;
+  
+  const citiesCpi = getCpi(currentCity, comparingCity);
+
+  const adjustedSalary = adjustSalary(citiesCpi[0], citiesCpi[1], salary);
+
+  res.json({ adjustedSalary });
+});
