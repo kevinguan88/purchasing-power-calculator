@@ -4,6 +4,9 @@ var cron = require('node-cron');
 var mysql = require('mysql2');
 const axios = require('axios');
 const areaCode = require('./area-code.json')
+var cors = require('cors')
+app.use(cors());
+app.use(express.json()); // Parse JSON in the request body
 
 const apiKey = "8141847a89544b2db611b6c73eec32af";
 
@@ -16,12 +19,6 @@ var con = mysql.createConnection({
   password: "Kevinbro8868",
   database: "cpidb"
 });
-
-//array containing all area codes for cities, used for API calls
-const areaCodeArray = Object.entries(areaCode).map(([key, value]) => ({
-    name: key,
-    code: value
-  }));
 
 //updates the CPI data in the database every month
 var updateCpi = cron.schedule('* * * 1 * *', () => {
@@ -52,27 +49,38 @@ var updateCpi = cron.schedule('* * * 1 * *', () => {
   )); 
 });
 
-const getCpi = (current, comparing) => {
+app.listen(3001, () => {
+  console.log(`Server is running on port 3001`);
+});
+
+
+//array containing all area codes for cities, used for API calls
+const areaCodeArray = Object.entries(areaCode).map(([key, value]) => ({
+    name: key,
+    code: value
+  }));
+
+
+const getCpi = (current, comparing, callback) => {
   let cpiArray = [];
   con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
     
-      con.query(`SELECT cpi FROM citycpi WHERE Code = ${current}`, (err, result) => {
+      con.query(`SELECT cpi FROM citycpi WHERE Code = '${current}'`, (err, result) => {
         if (err) throw err;
-        console.log('Retrieved current CPI:', results);
-        connection.end();
+        console.log('Retrieved current CPI:', result);
         cpiArray[0] = result;
       });
 
-      con.query(`SELECT cpi FROM citycpi WHERE Code = ${comparing}`, (err, result) => {
+      con.query(`SELECT cpi FROM citycpi WHERE Code = '${comparing}'`, (err, result) => {
         if (err) throw err;
-        console.log('Retrieved comparing CPI:', results);
-        connection.end();
+        console.log('Retrieved comparing CPI:', result);
         cpiArray[1] = result;
       });
   })
-  return cpiArray;
+  con.end();
+  callback(cpiArray); //replaced return statement to account for async tasks; the queries
 }
 
 const adjustSalary = (currentCpi, comparingCpi, salary) => {
@@ -80,13 +88,29 @@ const adjustSalary = (currentCpi, comparingCpi, salary) => {
 }
 //todo: define post endpoint method
 app.post('/api/calculate', (req, res) => {
-
-  // Assuming input1 and input2 are sent in the request body as JSON
+  try {
+  console.log(req.body);
   const { currentCity, comparingCity, salary } = req.body;
   
-  const citiesCpi = getCpi(currentCity, comparingCity);
+  //todo: incorperate promises to handle the CPI data after its set
+  let citiesCpi;
+  
+  getCpi(currentCity, comparingCity, cpiArray => {
+    citiesCpi = cpiArray;
+  });
 
-  const adjustedSalary = adjustSalary(citiesCpi[0], citiesCpi[1], salary);
+  console.log("Retrieved Cities CPI: " + citiesCpi[0]);
 
+  let adjustedSalary = adjustSalary(citiesCpi[0], citiesCpi[1], salary);
+
+  console.log("Calculated adjusted salary: " + adjustedSalary);
   res.json({ adjustedSalary });
+  } catch (error) {
+    
+    console.error('Error in /api/calculate:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+
+  }
 });
+
+console.log(adjustSalary(1,1,1));

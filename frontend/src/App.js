@@ -20,8 +20,6 @@ function App() {
   
   const [comparingName, setComparingName] = useState("");
 
-  const [apiKey, setApiKey] = useState("8141847a89544b2db611b6c73eec32af");
-
   // const [currentCpi, setCurrentCpi] = useState('');
   // const [comparingCpi, setComparingCpi] = useState('');
 
@@ -124,6 +122,10 @@ function App() {
     const comparingChoice = comparingSelect.options[comparingSelect.selectedIndex].value;
     const salaryAmount = salaryField.value;
     //array containing the data, used to query the backend
+    console.log(currentChoice);
+    console.log(comparingChoice);
+    console.log(salaryAmount);
+
     const codesAndSalary = [currentChoice, comparingChoice, parseInt(salaryAmount.replace(/,/g, ''))];
     setReqData(codesAndSalary);
     setComparingName(comparingSelect.options[comparingSelect.selectedIndex].label);
@@ -143,6 +145,7 @@ function App() {
 
 //todo: create axios post request 
   const handleCalculations = async () => {
+    console.log(reqData);
     let currentCity = reqData[0];
     let comparingCity = reqData[1];
     let salary = reqData[2];
@@ -151,6 +154,10 @@ function App() {
           currentCity,
           comparingCity,
           salary
+        }, {
+          headers: {
+            'Content-Type': 'application/json',
+          }
         });
         
         setAdjustedSalary(response.data.adjustedSalary);
