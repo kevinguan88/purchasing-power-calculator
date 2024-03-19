@@ -1,3 +1,4 @@
+require(‘dotenv’).config()
 const express = require('express');
 const app = express();
 var cron = require('node-cron');
@@ -8,7 +9,7 @@ var cors = require('cors')
 app.use(cors());
 app.use(express.json()); // Parse JSON in the request body
 
-const apiKey = "8141847a89544b2db611b6c73eec32af";
+const apiKey = process.env.API_KEY;
 
 let currentId;
 
@@ -16,7 +17,7 @@ let currentId;
 var con = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "Kevinbro8868",
+  password: process.env.SQL_PASS,
   database: "cpidb"
 });
 
